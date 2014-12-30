@@ -14,7 +14,8 @@ DOT : '.' ;
 PLUS : '+' ;
 DIGITS : ('0'..'9')+ ;
 NOT_LABEL : 'not' ;
-WS : (' ' | '\t' | EOL)+ {$channel = HIDDEN;} ;
+WS : (' ' | '\t' | EOL)+ //{$channel = HIDDEN;}
+    ;
 LESS_EQUAL : '<=' ;
 GREATER_EQUAL : '>=' ;
 LESS : '<' ;
@@ -112,12 +113,14 @@ PN_CHARS_BASE : 'A'..'Z' | 'a'..'z'
   ;
 fragment
 PN_CHARS_U : PN_CHARS_BASE | '_' ;
-FULL_IRI : LESS ( options {greedy=false;}:
-    ~( LESS | GREATER | '"' | OPEN_CURLY_BRACE | CLOSE_CURLY_BRACE | '|' | '^' | '\\' | '`'
+FULL_IRI : LESS ( //options {greedy=false;}:
+    ~( // LESS | GREATER | '"' | OPEN_CURLY_BRACE | CLOSE_CURLY_BRACE
+       [<>"{}]
+       | '|' | '^' | '\\' | '`'
 //      | ('\u0000'..'\u0020')
 		| ' ' // space needed for facet recognition.
      ))* GREATER {\$this->setText(substr(\$this->getText(), 1, strlen(\$this->getText()) - 2)); };
-NODE_ID : '_:' t=SIMPLE_IRI {\$this->setText($t.text); } ;
+NODE_ID : '_:' SIMPLE_IRI ; // {\$this->setText($t.text); } ;
 fragment
 PN_CHARS : PN_CHARS_U | MINUS | DIGITS
 //  | '\u00B7'
@@ -126,7 +129,8 @@ PN_CHARS : PN_CHARS_U | MINUS | DIGITS
   ;
 OPEN_SQUARE_BRACE : '[' ;
 CLOSE_SQUARE_BRACE : ']' ;
-QUOTED_STRING : '"' ( options {greedy=false;}: ~('\u0022' | '\u005C' | '\u000A' | '\u000D') | ECHAR)* '"' ;
+QUOTED_STRING : '"' ( //options {greedy=false;}:
+    ~('\u0022' | '\u005C' | '\u000A' | '\u000D') | ECHAR)* '"' ;
 fragment
 ECHAR : '\\' ( 't' | 'b' | 'n' | 'r' | 'f' | '\\' | '"' | '\'' ) ;
 LANGUAGE_TAG : '@' (('a'..'z') | ('A'..'Z'))+ ( MINUS (('a'..'z') ('A'..'Z') DIGITS)+)* {\$this->setText(substr(\$this->getText(), 1, strlen(\$this->getText()) - 1)); } ;
@@ -135,6 +139,6 @@ PREFIX_NAME : PN_PREFIX ':' ;
 ABBREVIATED_IRI : PREFIX_NAME SIMPLE_IRI ;
 SIMPLE_IRI : (PN_CHARS_U) (DOT? PN_CHARS)* ;
   // es wird noch knallen... (wegen digits redefinition)
-ILITERAL_HELPER : (s=PLUS | s=MINUS)? DIGITS ;
+ILITERAL_HELPER : (PLUS | MINUS)? DIGITS ;
 DLITERAL_HELPER : ( PLUS | MINUS )? DIGITS DOT DIGITS ;
 FPLITERAL_HELPER : ( PLUS | MINUS )? ( (DIGITS (DOT DIGITS)? EXPONENT?) | DOT DIGITS EXPONENT? ) F_LABEL ;

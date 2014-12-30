@@ -1,0 +1,6 @@
+.idea
+src/Erfurt_Syntax_Manchester.tokens
+src/Erfurt_Syntax_ManchesterLexer.py
+src/Erfurt_Syntax_ManchesterLexer.tokens
+src/Erfurt_Syntax_ManchesterListener.py
+src/Erfurt_Syntax_ManchesterParser.py

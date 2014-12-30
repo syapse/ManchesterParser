@@ -1,25 +1,25 @@
 grammar Erfurt_Syntax_Manchester;
 
 options {
-  language  = Php;
-  backtrack = true;
+  language  = python2;
+//  backtrack = true;
 //  memoize   = true;
 }
 
 import ManchesterTokenizer;
 
 description returns [$value]
-@init{
-\$ce = new Erfurt_Owl_Structured_ClassExpression();
-}
-@after{
-  if(count(\$ce->getElements())>1)
-    \$value = new Erfurt_Owl_Structured_ClassExpression_ObjectUnionOf(\$ce->getElements());
-  else {
-    \$e = \$ce->getElements();
-    \$value = \$e[0];
-  }
-}
+//@init{
+//\$ce = new Erfurt_Owl_Structured_ClassExpression();
+//}
+//@after{
+//  if(count(\$ce->getElements())>1)
+//    \$value = new Erfurt_Owl_Structured_ClassExpression_ObjectUnionOf(\$ce->getElements());
+//  else {
+//    \$e = \$ce->getElements();
+//    \$value = \$e[0];
+//  }
+//}
   :
   c1=conjunction {\$ce->addElement($c1.value);}
         (OR_LABEL c2=conjunction {\$ce->addElement($c2.value);})*
@@ -52,9 +52,9 @@ primary returns [$value]
   ;
 
 iri returns [$value]
-@after {
-\$value = new Erfurt_Owl_Structured_Iri($v.text);
-}
+//@after {
+//\$value = new Erfurt_Owl_Structured_Iri($v.text);
+//}
   :
   v=FULL_IRI
   | v=ABBREVIATED_IRI
@@ -62,7 +62,7 @@ iri returns [$value]
   ;
 
 objectPropertyExpression returns [$value]
-@after{\$value = $v.value;}
+//@after{\$value = $v.value;}
   :
   v=objectPropertyIRI
   | v=inverseObjectProperty
@@ -90,7 +90,7 @@ restriction returns [$value]
  // unreachable??? 
 //  | (o=objectPropertyExpression MIN_LABEL nni=nonNegativeInteger) {\$value = new Erfurt_Owl_Structured_ObjectPropertyRestriction_ObjectMinCardinality($o.value, $nni.value, isset(\$p)?$p.value:null);}
 //  | (o=objectPropertyExpression MAX_LABEL nni=nonNegativeInteger) {\$value = new Erfurt_Owl_Structured_ObjectPropertyRestriction_ObjectMaxCardinality($o.value, $nni.value, isset(\$p)?$p.value:null);}
-  | (o=objectPropertyExpression EXACTLY_LABEL nni=nonNegativeInteger) {\$value = new Erfurt_Owl_Structured_ObjectPropertyRestriction_ObjectExactCardinality($o.value, $nni.value, isset(\$p)?$p.value:null);}
+  //| (o=objectPropertyExpression EXACTLY_LABEL nni=nonNegativeInteger) {\$value = new Erfurt_Owl_Structured_ObjectPropertyRestriction_ObjectExactCardinality($o.value, $nni.value, isset(\$p)?$p.value:null);}
   ;
 
 atomic returns [$value]
@@ -157,7 +157,7 @@ dataType returns [$value]
   ;
 
 literal returns [$value]
-@after{\$value = $v.value;}
+//@after{\$value = $v.value;}
   :
   v=typedLiteral | v=stringLiteralNoLanguage | v=stringLiteralWithLanguage | v=integerLiteral | v=decimalLiteral | v=floatingPointLiteral
   ;
@@ -252,28 +252,28 @@ datatypePropertyIRI returns [$value]
   ;
 
 facet returns [$value]
-@after{\$value = $v.text;}
+//@after{\$value = $v.text;}
   :
   v=LENGTH_LABEL | v=MIN_LENGTH_LABEL | v=MAX_LENGTH_LABEL | v=PATTERN_LABEL | v=LANG_PATTERN_LABEL | v=LESS_EQUAL | v=LESS | v=GREATER_EQUAL | v=GREATER
   ;
 
 dataRange returns [$value]
-@init{\$retval = array();}
-@after{
-  if(count(\$retval)>1) \$value = new Erfurt_Owl_Structured_DataRange_DataUnionOf(\$retval);
-  else \$value = \$retval[0];
-}
+//@init{\$retval = array();}
+//@after{
+//  if(count(\$retval)>1) \$value = new Erfurt_Owl_Structured_DataRange_DataUnionOf(\$retval);
+//  else \$value = \$retval[0];
+//}
   :
   d1=dataConjunction {\$retval []= $d1.value;} 
         (OR_LABEL d2=dataConjunction {\$retval []= $d2.value;})*
   ;
 
 dataConjunction returns [$value]
-@init{\$retval = array();}
-@after{
-  if(count(\$retval)>1) \$value = new Erfurt_Owl_Structured_DataRange_DataIntersectionOf(\$retval);
-  else \$value = \$retval[0];
-}
+//@init{\$retval = array();}
+//@after{
+//  if(count(\$retval)>1) \$value = new Erfurt_Owl_Structured_DataRange_DataIntersectionOf(\$retval);
+//  else \$value = \$retval[0];
+//}
   :
   d1=dataPrimary {\$retval []= $d1.value;}
             (AND_LABEL d2=dataPrimary {\$retval []= $d2.value;})*
@@ -316,7 +316,7 @@ d2=description {\$value->addElement($d2.value);})*
 // 	;
 // 
 classFrame returns [$value]
-@init{\$value = null;}
+//@init{\$value = null;}
   :	CLASS_LABEL 
 c=classIRI
   (	//ANNOTATIONS_LABEL annotationAnnotatedList
