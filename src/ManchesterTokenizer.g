@@ -113,13 +113,13 @@ PN_CHARS_BASE : 'A'..'Z' | 'a'..'z'
   ;
 fragment
 PN_CHARS_U : PN_CHARS_BASE | '_' ;
-FULL_IRI : LESS ( //options {greedy=false;}:
+FULL_IRI : LESS (
     ~( // LESS | GREATER | '"' | OPEN_CURLY_BRACE | CLOSE_CURLY_BRACE
        [<>"{}]
        | '|' | '^' | '\\' | '`'
 //      | ('\u0000'..'\u0020')
 		| ' ' // space needed for facet recognition.
-     ))* GREATER {\$this->setText(substr(\$this->getText(), 1, strlen(\$this->getText()) - 2)); };
+     ))* GREATER;
 NODE_ID : '_:' SIMPLE_IRI ; // {\$this->setText($t.text); } ;
 fragment
 PN_CHARS : PN_CHARS_U | MINUS | DIGITS
@@ -133,7 +133,7 @@ QUOTED_STRING : '"' ( //options {greedy=false;}:
     ~('\u0022' | '\u005C' | '\u000A' | '\u000D') | ECHAR)* '"' ;
 fragment
 ECHAR : '\\' ( 't' | 'b' | 'n' | 'r' | 'f' | '\\' | '"' | '\'' ) ;
-LANGUAGE_TAG : '@' (('a'..'z') | ('A'..'Z'))+ ( MINUS (('a'..'z') ('A'..'Z') DIGITS)+)* {\$this->setText(substr(\$this->getText(), 1, strlen(\$this->getText()) - 1)); } ;
+LANGUAGE_TAG : '@' (('a'..'z') | ('A'..'Z'))+ ( MINUS (('a'..'z') ('A'..'Z') DIGITS)+)*  ;
 EXPONENT : ( 'e' | 'E' )(PLUS | MINUS)? DIGITS ;
 PREFIX_NAME : PN_PREFIX ':' ;
 ABBREVIATED_IRI : PREFIX_NAME SIMPLE_IRI ;
