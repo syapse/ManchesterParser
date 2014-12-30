@@ -44,10 +44,7 @@ conjunction returns [$value]
 
 primary returns [$value]
   :
-  (n=NOT_LABEL)? (v=restriction | v=atomic) {
-            if(isset($n)) {$value = new Erfurt_Owl_Structured_ClassExpression_ObjectComplementOf($v.value);}
-            else {$value = $v.value;}
-  }
+  (n=NOT_LABEL)? (v=restriction | v=atomic)
   ;
 
 iri returns [$value]
@@ -61,7 +58,7 @@ iri returns [$value]
   ;
 
 objectPropertyExpression returns [$value]
-//@after{$value = $v.value;}
+//@after
   :
   v=objectPropertyIRI
   | v=inverseObjectProperty
@@ -70,194 +67,190 @@ objectPropertyExpression returns [$value]
 restriction returns [$value]
   :
   o=objectPropertyExpression
-    ((SOME_LABEL p=primary {$value = new Erfurt_Owl_Structured_ObjectPropertyRestriction_ObjectSomeValuesFrom($o.value, $p.value);})
-    | (ONLY_LABEL p=primary {$value = new Erfurt_Owl_Structured_ObjectPropertyRestriction_ObjectAllValuesFrom($o.value, $p.value);})
-    | (VALUE_LABEL i=individual {$value = new Erfurt_Owl_Structured_ObjectPropertyRestriction_ObjectHasValue($o.value, $i.value);})
-    | (SELF_LABEL {$value = new Erfurt_Owl_Structured_ObjectPropertyRestriction_ObjectHasSelf($o.value);})
+    ((SOME_LABEL p=primary )
+    | (ONLY_LABEL p=primary )
+    | (VALUE_LABEL i=individual )
+    | (SELF_LABEL )
     | (MIN_LABEL nni=nonNegativeInteger p=primary)
     | (MAX_LABEL nni=nonNegativeInteger p=primary)
     | (EXACTLY_LABEL nni=nonNegativeInteger p=primary)
   )
   | dp=dataPropertyExpression(
-    (SOME_LABEL d=dataRange {$value = new Erfurt_Owl_Structured_DataPropertyRestriction_DataSomeValuesFrom($dp.value, $d.value);})
-  | (ONLY_LABEL d=dataRange {$value = new Erfurt_Owl_Structured_DataPropertyRestriction_DataAllValuesFrom($dp.value, $d.value);})
-  | (VALUE_LABEL l=literal{$value = new Erfurt_Owl_Structured_DataPropertyRestriction_DataHasValue($dp.value, $l.value);})
+    (SOME_LABEL d=dataRange )
+  | (ONLY_LABEL d=dataRange )
+  | (VALUE_LABEL l=literal)
   | (MIN_LABEL nni=nonNegativeInteger d=dataRange? )
   | (MAX_LABEL nni=nonNegativeInteger d=dataRange? )
-  | (EXACTLY_LABEL nni=nonNegativeInteger d=dataRange? {$value = new Erfurt_Owl_Structured_DataPropertyRestriction_DataExactCardinality($dp.value, $nni.value, $d.value);})
+  | (EXACTLY_LABEL nni=nonNegativeInteger d=dataRange? )
         )
  // unreachable??? 
-//  | (o=objectPropertyExpression MIN_LABEL nni=nonNegativeInteger) {$value = new Erfurt_Owl_Structured_ObjectPropertyRestriction_ObjectMinCardinality($o.value, $nni.value, isset($p)?$p.value:null);}
-//  | (o=objectPropertyExpression MAX_LABEL nni=nonNegativeInteger) {$value = new Erfurt_Owl_Structured_ObjectPropertyRestriction_ObjectMaxCardinality($o.value, $nni.value, isset($p)?$p.value:null);}
-  //| (o=objectPropertyExpression EXACTLY_LABEL nni=nonNegativeInteger) {$value = new Erfurt_Owl_Structured_ObjectPropertyRestriction_ObjectExactCardinality($o.value, $nni.value, isset($p)?$p.value:null);}
+//  | (o=objectPropertyExpression MIN_LABEL nni=nonNegativeInteger) 
+//  | (o=objectPropertyExpression MAX_LABEL nni=nonNegativeInteger) 
+  //| (o=objectPropertyExpression EXACTLY_LABEL nni=nonNegativeInteger) 
   ;
 
 atomic returns [$value]
   :
-  classIRI {$value = new Erfurt_Owl_Structured_OwlClass($classIRI.value);}
-  | OPEN_CURLY_BRACE individualList CLOSE_CURLY_BRACE {$value = new Erfurt_Owl_Structured_ClassExpression_ObjectOneOf($individualList.value);}
-  | OPEN_BRACE description CLOSE_BRACE {$value = $description.value;}
+  classIRI 
+  | OPEN_CURLY_BRACE individualList CLOSE_CURLY_BRACE 
+  | OPEN_BRACE description CLOSE_BRACE 
   ;
 
 classIRI returns [$value]
   :
-  iri {$value = $iri.value;}
+  iri 
   ;
 
 individualList returns [$value]
   :
-  i=individual {$value = new Erfurt_Owl_Structured_IndividualList($i.value);}
-    (COMMA i1=individual {$value->addElement($i1.value);})*
+  i=individual 
+    (COMMA i1=individual )*
   ;
 
 individual returns [$value]
   :
-  i=individualIRI {$value = new Erfurt_Owl_Structured_Individual_NamedIndividual($i.value);}
-  | NODE_ID {$value = new Erfurt_Owl_Structured_Individual_AnonymousIndividual($NODE_ID.text);}
+  i=individualIRI 
+  | NODE_ID 
   ;
 
 nonNegativeInteger returns [$value]
   :
-  DIGITS {$value = $DIGITS.text;}
+  DIGITS 
   ;
 
 dataPrimary returns [$value]
   :
-  (n=NOT_LABEL)? dataAtomic {
-            $value = (isset($n))? new Erfurt_Owl_Structured_DataRange_DataComplementOf($dataAtomic.value) : $dataAtomic.value;}
+  (n=NOT_LABEL)? dataAtomic
   ;
 
 dataPropertyExpression returns [$value]
   :
-  d=dataPropertyIRI {$value = $d.value;}
+  d=dataPropertyIRI 
   ;
 
 dataAtomic returns [$value]
   :
-  (dataType {$value = $dataType.value;})
-  | (OPEN_CURLY_BRACE literalList CLOSE_CURLY_BRACE {$value = new Erfurt_Owl_Structured_DataRange_DataOneOf($literalList.value);})
-  | (dataTypeRestriction {$value = $dataTypeRestriction.value;})
-  | (OPEN_BRACE dataRange CLOSE_BRACE {$value = $dataRange.value;})
+  (dataType )
+  | (OPEN_CURLY_BRACE literalList CLOSE_CURLY_BRACE )
+  | (dataTypeRestriction )
+  | (OPEN_BRACE dataRange CLOSE_BRACE )
   ;
 
 literalList returns [$value]
   :
-  l1=literal {$value = new Erfurt_Owl_Structured_OwlList_LiteralList($l1.value);}
-  (COMMA l2=literal {$value->addElement($l2.value);})*
+  l1=literal 
+  (COMMA l2=literal )*
   ;
 
 dataType returns [$value]
   :
-  datatypeIRI {$value = $datatypeIRI.value;}
-  | v=INTEGER_LABEL {$value = $v.text;} 
-  | v=DECIMAL_LABEL {$value = $v.text;}
-  | v=FLOAT_LABEL {$value = $v.text;}
-  | v=STRING_LABEL {$value = $v.text;}
+  datatypeIRI 
+  | v=INTEGER_LABEL  
+  | v=DECIMAL_LABEL 
+  | v=FLOAT_LABEL 
+  | v=STRING_LABEL 
   ;
 
 literal returns [$value]
-//@after{$value = $v.value;}
+//@after
   :
   v=typedLiteral | v=stringLiteralNoLanguage | v=stringLiteralWithLanguage | v=integerLiteral | v=decimalLiteral | v=floatingPointLiteral
   ;
 
 stringLiteralNoLanguage returns [$value]
   :
-  QUOTED_STRING {
-            $value = new Erfurt_Owl_Structured_Literal_StringLiteral($QUOTED_STRING.text);
-        }
+  QUOTED_STRING
   ;
 
 stringLiteralWithLanguage returns [$value]
   :
-  QUOTED_STRING LANGUAGE_TAG {$value = new Erfurt_Owl_Structured_Literal_StringLiteral($QUOTED_STRING.text, $LANGUAGE_TAG.text);}
+  QUOTED_STRING LANGUAGE_TAG 
   ;
 
 lexicalValue returns [$value]
   :
-  QUOTED_STRING {$value = $QUOTED_STRING.text;}
+  QUOTED_STRING 
   ;
 
 typedLiteral returns [$value]
   :
-  lexicalValue REFERENCE dataType {$value = new Erfurt_Owl_Structured_Literal_TypedLiteral($lexicalValue.value, $dataType.value);}
+  lexicalValue REFERENCE dataType 
   ;
 
 restrictionValue returns [$value]
   :
-  literal {$value = $literal.value;}
+  literal 
   ;
 
 inverseObjectProperty returns [$value]
   :
-  INVERSE_LABEL objectPropertyIRI {
-            $value = new Erfurt_Owl_Structured_ObjectPropertyExpression($objectPropertyIRI.value, true);}
+  INVERSE_LABEL objectPropertyIRI
   ;
 
 decimalLiteral returns [$value]
   :
-  DLITERAL_HELPER {$value = new Erfurt_Owl_Structured_Literal_DecimalLiteral($DLITERAL_HELPER.text);}
+  DLITERAL_HELPER 
   ;
 
 integerLiteral returns [$value]
-  : (i=ILITERAL_HELPER | i=DIGITS) {$value = new Erfurt_Owl_Structured_Literal_IntegerLiteral($i.text);}
+  : (i=ILITERAL_HELPER | i=DIGITS) 
   ;
 
 floatingPointLiteral returns [$value]
   :
-  FPLITERAL_HELPER {$value = new Erfurt_Owl_Structured_Literal_FloatingPointLiteral($FPLITERAL_HELPER.text);}
+  FPLITERAL_HELPER 
   ;
 
 objectProperty returns [$value]
   :
-  objectPropertyIRI {$value = new Erfurt_Owl_Structured_ObjectPropertyExpression($objectPropertyIRI.value);}
+  objectPropertyIRI 
   ;
 
 dataProperty returns [$value]
   :
-  dataPropertyIRI {$value = new Erfurt_Owl_Structured_DataProperty($dataPropertyIRI.value);}
+  dataPropertyIRI 
   ;
 
 dataPropertyIRI returns [$value]
   :
-  iri {$value = $iri.value;}
+  iri 
   ;
 
 datatypeIRI returns [$value]
   :
-  iri {$value = $iri.value;}
+  iri 
   ;
 
 objectPropertyIRI returns [$value]
   :
-  iri {$value = $iri.value;}
+  iri 
   ;
 
 dataTypeRestriction returns [$value]
   :
-  dataType {$value = new Erfurt_Owl_Structured_DataRange_DatatypeRestriction($dataType.value);} OPEN_SQUARE_BRACE
-        ( f=facet r=restrictionValue {$value -> addRestriction($f.value, $r.value);} COMMA?)+
+  dataType  OPEN_SQUARE_BRACE
+        ( f=facet r=restrictionValue  COMMA?)+
   CLOSE_SQUARE_BRACE
   ;
 
 individualIRI returns [$value]
   :
-  iri {$value = $iri.value;}
+  iri 
   ;
 
 datatypePropertyIRI returns [$value]
   :
-  iri {$value = $iri.value;}
+  iri 
   ;
 
 facet returns [$value]
-//@after{$value = $v.text;}
+//@after
   :
   v=LENGTH_LABEL | v=MIN_LENGTH_LABEL | v=MAX_LENGTH_LABEL | v=PATTERN_LABEL | v=LANG_PATTERN_LABEL | v=LESS_EQUAL | v=LESS | v=GREATER_EQUAL | v=GREATER
   ;
 
 dataRange returns [$value]
-//@init{$retval = array();}
+//@init
 //@after{
 //  if(count($retval)>1) $value = new Erfurt_Owl_Structured_DataRange_DataUnionOf($retval);
 //  else $value = $retval[0];
@@ -268,7 +261,7 @@ dataRange returns [$value]
   ;
 
 dataConjunction returns [$value]
-//@init{$retval = array();}
+//@init
 //@after{
 //  if(count($retval)>1) $value = new Erfurt_Owl_Structured_DataRange_DataIntersectionOf($retval);
 //  else $value = $retval[0];
@@ -286,45 +279,42 @@ dataConjunction returns [$value]
 //	;
 //
 //annotation returns [$value]
-//	:	ap=annotationPropertyIRI at=annotationTarget {$value = new Annotation($ap.value,$at.value);}
+//	:	ap=annotationPropertyIRI at=annotationTarget 
 //	;
 //
 //annotationTarget returns [$value]
-//	:	NODE_ID {$value = $NODE_ID.text;}
-//	|	iri {$value = $iri.value;}
-//	|	literal {$value = $literal.value;}
+//	:	NODE_ID 
+//	|	iri 
+//	|	literal 
 //	;
 //annotations returns [$value]
-//	: (ANNOTATIONS_LABEL a=annotationAnnotatedList {$value = $a.value;})?
+//	: (ANNOTATIONS_LABEL a=annotationAnnotatedList )?
 //	;
 //
 descriptionAnnotatedList returns [$value]
    :	//annotations? 
-d1=description {$value = $d1.value;}
+d1=description 
 (COMMA 
 //annotations? 
-d2=description {$value->addElement($d2.value);})*
+d2=description )*
    ;
 
 ////description2List returns [$value]
-//// 	:	d=description COMMA dl=descriptionList {$value = new Erfurt_Owl_Structured_OwlList($d.value); $value->addAllElements($dl.value);}
+//// 	:	d=description COMMA dl=descriptionList 
 //// 	;
 //// 
 //descriptionList returns [$value]
-// 	:	d1=description {$value = new Erfurt_Owl_Structured_OwlList($d1.value);} (COMMA d2=description {$value->addElement($d2.value);})*
+// 	:	d1=description  (COMMA d2=description )*
 // 	;
 // 
 classFrame returns [$value]
-//@init{$value = null;}
+//@init
   :	CLASS_LABEL 
 c=classIRI
   (	//ANNOTATIONS_LABEL annotationAnnotatedList
     //|	
-SUBCLASS_OF_LABEL s=descriptionAnnotatedList {
-if(!$value) $value = new Erfurt_Owl_Structured_ClassAxiom_SubClassOf($c.value, $s.value);
-else $value->addElement($s.value);
-}
-//// 		|	EQUIVALENT_TO_LABEL e=descriptionAnnotatedList {$value = new Erfurt_Owl_Structured_ClassAxiom_EquivalentClasses($c.value, $e.value);}
+SUBCLASS_OF_LABEL s=descriptionAnnotatedList
+//// 		|	EQUIVALENT_TO_LABEL e=descriptionAnnotatedList 
 //// 		|	DISJOINT_WITH_LABEL d=descriptionAnnotatedList
 //// 		|	DISJOINT_UNION_OF_LABEL annotations description2List
   )*
@@ -388,7 +378,7 @@ EOF
 // 	;
 // 
 //annotationPropertyIRI returns [$value]
-//	:	iri {$value = $iri.value;}
+//	:	iri 
 // 	;
 // 
 //annotationPropertyIRIAnnotatedList
@@ -397,11 +387,11 @@ EOF
 // 
 //// individualFrame returns [$value]
 //// 	:	INDIVIDUAL_LABEL  i=individual
-//// 	(	ANNOTATIONS_LABEL  a=annotationAnnotatedList {$value = new Erfurt_Owl_Structured_Axiom_AnnotationAxiom_AnnotationAssertion($i.value, $a.value);}
-//// 		|	TYPES_LABEL  d=descriptionAnnotatedList {$value = new Erfurt_Owl_Structured_Axiom_Assertion_ClassAssertion($i.value, $d.value);}
-//// 		|	FACTS_LABEL  f=factAnnotatedList {$value = new Erfurt_Owl_Structured_Axiom_Assertion_ObjectPropertyAssertion($i.value, $f.value);}
-//// 		|	SAME_AS_LABEL  ial=individualAnnotatedList {$value = new Erfurt_Owl_Structured_Axiom_Assertion_SameIndividual($i.value, $ial.value);}
-//// 		|	DIFFERENET_FROM_LABEL ial1=individualAnnotatedList {$value = new Erfurt_Owl_Structured_Axiom_Assertion_DifferentIndividuals($i.value, $ial.value);}
+//// 	(	ANNOTATIONS_LABEL  a=annotationAnnotatedList 
+//// 		|	TYPES_LABEL  d=descriptionAnnotatedList 
+//// 		|	FACTS_LABEL  f=factAnnotatedList 
+//// 		|	SAME_AS_LABEL  ial=individualAnnotatedList 
+//// 		|	DIFFERENET_FROM_LABEL ial1=individualAnnotatedList 
 //// 	)*
 //// 	;
 //
@@ -432,7 +422,7 @@ EOF
 // 
 //// misc returns [$value]
 //// 	:	EQUIVALENT_CLASSES_LABEL  annotations description2List
-//// 	|	DISJOINT_CLASSES_LABEL  annotations description2List {$value = new Erfurt_Owl_Structured_ClassAxiom_DisjointClasses($annotations.value, $description2List.value);}
+//// 	|	DISJOINT_CLASSES_LABEL  annotations description2List 
 //// 	|	EQUIVALENT_PROPERTIES_LABEL  annotations (objectProperty2List | dataProperty2List)
 //// 	|	DISJOINT_PROPERTIES_LABEL  annotations (objectProperty2List | dataProperty2List)
 //// 	|	SAME_INDIVIDUAL_LABEL  annotations individual2List
