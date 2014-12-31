@@ -14,8 +14,7 @@ DOT : '.' ;
 PLUS : '+' ;
 DIGITS : ('0'..'9')+ ;
 NOT_LABEL : 'not' ;
-WS : (' ' | '\t' | EOL)+ //{$channel = HIDDEN;}
-    ;
+WS : (' ' | '\t' | EOL)+ -> skip ;
 LESS_EQUAL : '<=' ;
 GREATER_EQUAL : '>=' ;
 LESS : '<' ;

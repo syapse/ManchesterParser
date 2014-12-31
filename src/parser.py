@@ -13,6 +13,7 @@ def main(argv):
     stream = CommonTokenStream(lexer)
     parser = Erfurt_Syntax_ManchesterParser(stream)
     tree = parser.description()
+    print tree
 
 if __name__ == '__main__':
     main(sys.argv)
